@@ -12,6 +12,5 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "node-fs-extra": "^0.8.2"
   }
 }
