@@ -14,26 +14,26 @@ const createDir = (dir) => {
     }
 }
 
-const copyDir = (src, dest) => {
+const copy = (src, dest) => {
+    const desination = fs.createWriteStream(dest)
+    fs.createReadStream(src).pipe(desination)
+}
+
+const copyDirRecursive = (src, dest) => {
     createDir(dest)
     const files = fs.readdirSync(src)
     for(var i = 0; i < files.length; i++) {
         const currentFile = fs.lstatSync(path.join(src, files[i]))
         if(currentFile.isDirectory()) {
-            copyDir(path.join(src, files[i]), path.join(dest, files[i]))
+            copyDirRecursive(path.join(src, files[i]), path.join(dest, files[i]))
         } else {
             copy(path.join(src, files[i]), path.join(dest, files[i]))
         }
     }
 }
 
-const copy = (src, dest) => {
-    const desination = fs.createWriteStream(dest)
-    fs.createReadStream(src).pipe(desination)
-}
-
 const generateReactProject = () => {
-    copyDir(
+    copyDirRecursive(
         path.join(__dirname, '/project-templates/react-project/'),
         path.join('./', PROJECT_NAME)
     )
@@ -48,13 +48,12 @@ const manPage = () => {
         this application takes two arguments to work properly:
             - projectType
             - projectName
-        
         ex:
             node index.js react my-cool-react-application
 
             where react is type and my-cool-react-application is name
         
-        if you experience any bugs (this is early in dev cycle) post it in the repo: github.com/jonasjore/coolerator 
+        if you experience any bugs (this is early in dev cycle) feel free to post an issue about it in the repo: https://www.github.com/jonasjore/coolerator 
         or send me a tweet @jore_irl
     `
 }
@@ -62,14 +61,12 @@ const manPage = () => {
 const getProjectType = (projectType) => {
     switch(projectType) {
         case 'react': {
-            console.log(projectType)
-            console.log(PROJECT_NAME)
+            console.log("generating " + PROJECT_NAME)
             return generateReactProject()
         }
         case '-h': {
             console.log(manPage())
             return 
-
         }
         default:
             throw Error("project type not implemented yet")
